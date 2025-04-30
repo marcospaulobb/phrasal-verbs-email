@@ -1,0 +1,22 @@
+{
+  "schedule": {
+    "times": ["0 7 * * *", "0 18 * * *"],
+    "timezone": "America/Sao_Paulo"
+  },
+  "api": {
+    "openai": {
+      "model": "gpt-3.5-turbo",
+      "temperature": 0.7,
+      "max_tokens": 1000
+    }
+  },
+  "email": {
+    "subject": "🇬🇧 Lição Diária de Phrasal Verb: {phrasalVerb}",
+    "from": "profdeinglesdomarcos@gmail.com",
+    "to": "marcospaulobb@gmail.com",
+    "html": true
+  },
+  "message": {
+    "format": "<h1>🇬🇧 LIÇÃO DIÁRIA DE INGLÊS 🇬🇧</h1><h2>PHRASAL VERB: {phrasalVerb}</h2><div>{content}</div><p>✅ Pratique este phrasal verb hoje durante o dia!</p>"
+  }
+} 
