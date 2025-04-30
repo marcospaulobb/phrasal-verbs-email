@@ -11,4 +11,10 @@ const server = http.createServer((req, res) => {
 const port = process.env.PORT || 3000;
 server.listen(port, () => {
     console.log(`Servidor rodando na porta ${port}`);
+    
+    // Enviar um email de teste imediatamente após o servidor iniciar
+    console.log('Enviando email de teste...');
+    app.sendDailyPhrasalVerbLesson()
+        .then(() => console.log('Email de teste enviado com sucesso!'))
+        .catch(err => console.error('Erro ao enviar email de teste:', err));
 }); 
