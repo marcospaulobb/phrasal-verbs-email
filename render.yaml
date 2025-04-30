@@ -2,6 +2,7 @@ services:
   - type: web
     name: phrasal-verbs-email
     env: node
+    region: oregon
     buildCommand: npm install
     startCommand: npm start
     envVars:
