@@ -1,20 +1,7 @@
 // Este arquivo é o ponto de entrada para o Render
 const app = require('./Index.js');
 
-// Adicionar um pequeno servidor web para manter o serviço ativo
-const http = require('http');
-const server = http.createServer((req, res) => {
-    res.writeHead(200, { 'Content-Type': 'text/plain' });
-    res.end('Phrasal Verbs Service is running!\n');
-});
+// O servidor já está sendo iniciado no Index.js com o Express
+// Não precisamos criar um novo servidor aqui
 
-const port = process.env.PORT || 3000;
-server.listen(port, () => {
-    console.log(`Servidor rodando na porta ${port}`);
-    
-    // Enviar um email de teste imediatamente após o servidor iniciar
-    console.log('Enviando email de teste...');
-    app.sendDailyPhrasalVerbLesson()
-        .then(() => console.log('Email de teste enviado com sucesso!'))
-        .catch(err => console.error('Erro ao enviar email de teste:', err));
-}); 
+console.log('Serviço iniciado com sucesso!'); 

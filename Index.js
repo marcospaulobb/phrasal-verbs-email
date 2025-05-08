@@ -6,6 +6,10 @@ const axios = require('axios');
 const cron = require('node-cron');
 const fs = require('fs').promises;
 const nodemailer = require('nodemailer');
+const http = require('http');
+const path = require('path');
+const express = require('express');
+const app = express();
 require('dotenv').config();
 
 // Carregar configurações
@@ -165,20 +169,97 @@ async function removePhrasalVerb(phrasalVerbToRemove) {
   }
 }
 
+// Função para enviar email de status
+async function sendStatusEmail(status) {
+  try {
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: GMAIL_USER,
+        pass: GMAIL_APP_PASSWORD
+      }
+    });
+    
+    const mailOptions = {
+      from: config.email.from,
+      to: config.email.to,
+      subject: 'Status do Serviço de Phrasal Verbs',
+      html: `
+        <h1>Status do Serviço</h1>
+        <p>Data: ${new Date().toISOString()}</p>
+        <p>Status: ${status}</p>
+        <p>Última execução: ${new Date().toISOString()}</p>
+        <p>Próxima execução: ${new Date().toLocaleString('pt-BR', { timeZone: config.schedule.timezone })}</p>
+      `
+    };
+    
+    await transporter.sendMail(mailOptions);
+    console.log(`[${new Date().toISOString()}] Email de status enviado`);
+  } catch (error) {
+    console.error(`[${new Date().toISOString()}] Erro ao enviar email de status:`, error);
+  }
+}
+
+// Servir arquivos estáticos da pasta public
+app.use(express.static('public'));
+
+// Endpoint para envio manual de email
+app.post('/send-email', async (req, res) => {
+    try {
+        await sendDailyPhrasalVerbLesson();
+        res.json({ success: true });
+    } catch (error) {
+        console.error(`[${new Date().toISOString()}] Erro no envio manual:`, error);
+        res.status(500).json({ 
+            success: false, 
+            message: error.message 
+        });
+    }
+});
+
+// Endpoint de saúde
+app.get('/health', (req, res) => {
+    res.json({
+        status: 'ok',
+        lastExecution: new Date().toISOString(),
+        nextScheduled: config.schedule.times
+    });
+});
+
+// Iniciar servidor
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`[${new Date().toISOString()}] Servidor rodando na porta ${PORT}`);
+});
+
+// Agendar email de status diário às 6h
+cron.schedule('0 6 * * *', () => {
+  sendStatusEmail('Serviço em execução');
+}, {
+  timezone: config.schedule.timezone
+});
+
 // Agendamento para executar nos horários configurados
 config.schedule.times.forEach(cronTime => {
   cron.schedule(cronTime, () => {
-    console.log(`Executando tarefa agendada para ${cronTime}...`);
-    sendDailyPhrasalVerbLesson();
+    const now = new Date();
+    console.log(`[${now.toISOString()}] Iniciando execução agendada para ${cronTime}...`);
+    sendDailyPhrasalVerbLesson()
+      .then(() => {
+        console.log(`[${new Date().toISOString()}] Tarefa agendada concluída com sucesso`);
+      })
+      .catch(error => {
+        console.error(`[${new Date().toISOString()}] Erro na tarefa agendada:`, error);
+      });
   }, {
     timezone: config.schedule.timezone
   });
-  console.log(`Agendamento configurado para: ${cronTime} (${config.schedule.timezone})`);
+  console.log(`[${new Date().toISOString()}] Agendamento configurado para: ${cronTime} (${config.schedule.timezone})`);
 });
 
 // Para testar o script imediatamente
 if (process.env.NODE_ENV === 'development') {
-  console.log('Ambiente de desenvolvimento detectado. Executando teste imediato...');
+  console.log(`[${new Date().toISOString()}] Ambiente de desenvolvimento detectado. Executando teste imediato...`);
   sendDailyPhrasalVerbLesson();
 }
 
@@ -190,4 +271,4 @@ module.exports = {
 };
 
 // Manter o processo rodando
-console.log('Serviço iniciado. Aguardando os horários agendados...');
+console.log(`[${new Date().toISOString()}] Serviço iniciado. Aguardando os horários agendados...`);

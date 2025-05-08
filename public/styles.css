@@ -1,0 +1,56 @@
+body {
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.card {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: none;
+    border-radius: 10px;
+}
+
+.card-header {
+    border-radius: 10px 10px 0 0 !important;
+    padding: 1.5rem;
+}
+
+.card-body {
+    padding: 2rem;
+}
+
+.btn-success {
+    padding: 1rem;
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+}
+
+.btn-success:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.list-group-item {
+    padding: 1rem;
+    margin-bottom: 0.5rem;
+    border-radius: 5px !important;
+    border: 1px solid #dee2e6;
+}
+
+.badge {
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+}
+
+.alert {
+    border-radius: 5px;
+    padding: 1rem;
+}
+
+h4 {
+    color: #2c3e50;
+    margin-bottom: 1rem;
+}
+
+.text-muted {
+    font-size: 0.9rem;
+} 
